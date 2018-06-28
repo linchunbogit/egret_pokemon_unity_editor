@@ -68,23 +68,23 @@ public class EffectEditorWindow : EditorWindow
             return;
 
         m_dicAssetNum.Clear();
-        for(int i = 0; i < m_effectData.arrAssetData.Length; ++i)
+        for(int i = 0; i < m_effectData.aA.Length; ++i)
         {
-            EffectAssetData assetData = m_effectData.arrAssetData[i];
-            if (m_dicAssetNum.ContainsKey(assetData.imgId))
-                m_dicAssetNum[assetData.imgId]++;
+            EffectAssetData assetData = m_effectData.aA[i];
+            if (m_dicAssetNum.ContainsKey(assetData.i))
+                m_dicAssetNum[assetData.i]++;
             else
-                m_dicAssetNum.Add(assetData.imgId, 1);
+                m_dicAssetNum.Add(assetData.i, 1);
         }
 
         m_dicFrameNum.Clear();
-        for(int i = 0; i < m_effectData.arrFrameData.Length; ++i)
+        for(int i = 0; i < m_effectData.aF.Length; ++i)
         {
-            EffectFrameData frameData = m_effectData.arrFrameData[i];
-            if (m_dicFrameNum.ContainsKey(frameData.frameNo))
-                m_dicFrameNum[frameData.frameNo]++;
+            EffectFrameData frameData = m_effectData.aF[i];
+            if (m_dicFrameNum.ContainsKey(frameData.n))
+                m_dicFrameNum[frameData.n]++;
             else
-                m_dicFrameNum.Add(frameData.frameNo, 1);
+                m_dicFrameNum.Add(frameData.n, 1);
         }
 
         GUILayout.BeginVertical();
@@ -114,16 +114,16 @@ public class EffectEditorWindow : EditorWindow
     // 重新排序帧
     private void ResortFrame()
     {
-        List<EffectFrameData> listFrameData = new List<EffectFrameData>(m_effectData.arrFrameData);
+        List<EffectFrameData> listFrameData = new List<EffectFrameData>(m_effectData.aF);
         listFrameData.Sort((a, b)=>{
-            if (a.frameNo > b.frameNo)
+            if (a.n > b.n)
                 return 1;
-            if (a.frameNo < b.frameNo)
+            if (a.n < b.n)
                 return -1;
             return 0;
         });
 
-        m_effectData.arrFrameData = listFrameData.ToArray();
+        m_effectData.aF = listFrameData.ToArray();
     }
 
     // 绘制菜单
@@ -159,8 +159,8 @@ public class EffectEditorWindow : EditorWindow
                 return;
             }
 
-            if (m_effectData.arrFrameData.Length > 0)
-                m_frameData = m_effectData.arrFrameData[0];
+            if (m_effectData.aF.Length > 0)
+                m_frameData = m_effectData.aF[0];
             else
                 m_frameData = null;
         }
@@ -204,7 +204,7 @@ public class EffectEditorWindow : EditorWindow
         GUI.backgroundColor = m_defaultBgClr;
 
         GUILayout.Label("帧率:", GUILayout.Width(55));
-        m_effectData.rate = EditorGUILayout.IntField(m_effectData.rate, GUILayout.Width(100));
+        m_effectData.r = EditorGUILayout.IntField(m_effectData.r, GUILayout.Width(100));
         GUILayout.Label("总播放时间:" + EffectEditorUtil.CalcEffectTime(m_effectData) + "s", GUILayout.Width(200));
 
         GUILayout.EndHorizontal();
@@ -221,9 +221,9 @@ public class EffectEditorWindow : EditorWindow
 
         m_assetScroPos = GUILayout.BeginScrollView(m_assetScroPos, true, false, GUILayout.ExpandWidth(true)); // true, false, GUILayout.Width(200), GUILayout.Height(100));
 
-        for (int i = 0; i < m_effectData.arrAssetData.Length; ++i)
+        for (int i = 0; i < m_effectData.aA.Length; ++i)
         {
-            EffectAssetData assData = m_effectData.arrAssetData[i];
+            EffectAssetData assData = m_effectData.aA[i];
             DrawAssetItem(assData);
         }
 
@@ -233,10 +233,10 @@ public class EffectEditorWindow : EditorWindow
         // +按钮
         if (GUILayout.Button("+", GUILayout.Height(40), GUILayout.Width(245)))
         {
-            List<EffectAssetData> listAsset = new List<EffectAssetData>(m_effectData.arrAssetData);
+            List<EffectAssetData> listAsset = new List<EffectAssetData>(m_effectData.aA);
             listAsset.Add(new EffectAssetData());
 
-            m_effectData.arrAssetData = listAsset.ToArray();
+            m_effectData.aA = listAsset.ToArray();
         }
 
         GUILayout.EndVertical();
@@ -250,7 +250,7 @@ public class EffectEditorWindow : EditorWindow
         GUI.backgroundColor = m_defaultBgClr;
         m_frameScroPos = GUILayout.BeginScrollView(m_frameScroPos, true, false, GUILayout.Height(120), GUILayout.Width(WINDOW_WIDTH - 270)); // true, false, GUILayout.Width(200), GUILayout.Height(100));
 
-        EffectFrameData[] arrFrameData = m_effectData.arrFrameData;
+        EffectFrameData[] arrFrameData = m_effectData.aF;
         GUILayout.BeginHorizontal();
         for (int i = 0; i < arrFrameData.Length; ++i)
         {
@@ -261,7 +261,7 @@ public class EffectEditorWindow : EditorWindow
             else
                 GUI.contentColor = Color.red;
 
-            GUILayout.Label((frameData.frameNo + 1).ToString(), m_styleFrameFont, GUILayout.Width(20));
+            GUILayout.Label((frameData.n + 1).ToString(), m_styleFrameFont, GUILayout.Width(20));
             GUI.contentColor = m_defaultConClr;
         }
 
@@ -309,11 +309,11 @@ public class EffectEditorWindow : EditorWindow
             GUI.contentColor = Color.white;
             GUILayout.Label("当前帧：", GUILayout.Width(50));
             GUI.contentColor = m_defaultConClr;
-            int no = EditorGUILayout.IntField(m_frameData.frameNo+1, GUILayout.Width(100));
+            int no = EditorGUILayout.IntField(m_frameData.n+1, GUILayout.Width(100));
             if (no < 1)
                 no = 1;
 
-            m_frameData.frameNo = no - 1;
+            m_frameData.n = no - 1;
 
             if(GUILayout.Button("播放", GUILayout.Width(50)))
             {
@@ -351,21 +351,21 @@ public class EffectEditorWindow : EditorWindow
                 return;
             }
 
-            List<EffectImageData> listData = new List<EffectImageData>(m_frameData.arrImgData);
+            List<EffectImageData> listData = new List<EffectImageData>(m_frameData.aI);
             listData.Add(new EffectImageData());
-            m_frameData.arrImgData = listData.ToArray();
+            m_frameData.aI = listData.ToArray();
         }
         if (GUILayout.Button("添加新帧"))
         {
-            List<EffectFrameData> listFrame = new List<EffectFrameData>(m_effectData.arrFrameData);
+            List<EffectFrameData> listFrame = new List<EffectFrameData>(m_effectData.aF);
             int frameNum = listFrame.Count;
             EffectFrameData nFrameData = frameNum > 0 ? CopyFrameData(listFrame[frameNum-1]) : new EffectFrameData();
             
             if(frameNum > 0)
-                nFrameData.frameNo++;
+                nFrameData.n++;
 
             listFrame.Add(nFrameData);
-            m_effectData.arrFrameData = listFrame.ToArray();
+            m_effectData.aF = listFrame.ToArray();
             m_frameData = nFrameData;
         }
         if (GUILayout.Button("复制选中帧到末尾"))
@@ -376,17 +376,17 @@ public class EffectEditorWindow : EditorWindow
                 return;
             }
 
-            List<EffectFrameData> listFrame = new List<EffectFrameData>(m_effectData.arrFrameData);
+            List<EffectFrameData> listFrame = new List<EffectFrameData>(m_effectData.aF);
             int frameNum = listFrame.Count;
             EffectFrameData nFrameData = frameNum > 0 ? CopyFrameData(m_frameData) : new EffectFrameData();
 
             if (frameNum > 0)
             {
-                nFrameData.frameNo = listFrame[frameNum - 1].frameNo + 1;
+                nFrameData.n = listFrame[frameNum - 1].n + 1;
             }
 
             listFrame.Add(nFrameData);
-            m_effectData.arrFrameData = listFrame.ToArray();
+            m_effectData.aF = listFrame.ToArray();
             m_frameData = nFrameData;
         }
         if (GUILayout.Button("删除当前帧"))
@@ -397,11 +397,11 @@ public class EffectEditorWindow : EditorWindow
                 return;
             }
 
-            List<EffectFrameData> listFrame = new List<EffectFrameData>(m_effectData.arrFrameData);
+            List<EffectFrameData> listFrame = new List<EffectFrameData>(m_effectData.aF);
             int idx = listFrame.IndexOf(m_frameData);
             listFrame.Remove(m_frameData);
 
-            m_effectData.arrFrameData = listFrame.ToArray();
+            m_effectData.aF = listFrame.ToArray();
             m_frameData = null;
 
             if(listFrame.Count > 0)
@@ -425,9 +425,9 @@ public class EffectEditorWindow : EditorWindow
         GUILayout.BeginHorizontal();
         if(m_frameData != null)
         {
-            for(int i = 0; i < m_frameData.arrImgData.Length; ++i)
+            for(int i = 0; i < m_frameData.aI.Length; ++i)
             {
-                EffectImageData imgData = m_frameData.arrImgData[i];
+                EffectImageData imgData = m_frameData.aI[i];
                 DrawFrameImageItem(imgData);
             }
         }
@@ -457,14 +457,14 @@ public class EffectEditorWindow : EditorWindow
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("资源id:", GUILayout.Width(55));
-        assetData.imgId = EditorGUILayout.IntField(assetData.imgId, GUILayout.Width(100));
+        assetData.i = EditorGUILayout.IntField(assetData.i, GUILayout.Width(100));
 
         if (GUILayout.Button("-", GUILayout.Width(20)))
         {
-            List<EffectAssetData> listData = new List<EffectAssetData>(m_effectData.arrAssetData);
+            List<EffectAssetData> listData = new List<EffectAssetData>(m_effectData.aA);
             listData.Remove(assetData);
 
-            m_effectData.arrAssetData = listData.ToArray();
+            m_effectData.aA = listData.ToArray();
         }
 
         GUILayout.EndHorizontal();
@@ -473,19 +473,19 @@ public class EffectEditorWindow : EditorWindow
         GUILayout.Label("资源:", GUILayout.Width(55));
 
         Texture2D tx2D = null;
-        if(!string.IsNullOrEmpty(assetData.imgName))
-            tx2D = Resources.Load<Texture2D>("EffectRaw/" + assetData.imgName);
+        if(!string.IsNullOrEmpty(assetData.n))
+            tx2D = Resources.Load<Texture2D>("EffectRaw/" + assetData.n);
 
         Texture2D nTx2D = (Texture2D)EditorGUILayout.ObjectField(tx2D, typeof(Texture2D), false, GUILayout.Width(120));
         if (nTx2D != null)
         {
-            assetData.imgName = nTx2D.name;
-            assetData.width = nTx2D.width;
-            assetData.height = nTx2D.height;
+            assetData.n = nTx2D.name;
+            assetData.w = nTx2D.width;
+            assetData.h = nTx2D.height;
         }
         else
         {
-            assetData.imgName = null;
+            assetData.n = null;
         }
 
         GUILayout.EndHorizontal();
@@ -497,7 +497,7 @@ public class EffectEditorWindow : EditorWindow
     // @imgData:图像数据
     private void DrawFrameImageItem(EffectImageData imgData)
     {
-        if (CheckImgIsValid(imgData.imgId))
+        if (CheckImgIsValid(imgData.i))
             GUI.backgroundColor = Color.green;
         else
             GUI.backgroundColor = Color.red;
@@ -507,44 +507,44 @@ public class EffectEditorWindow : EditorWindow
 
         GUILayout.BeginHorizontal(); // 第1行
         GUILayout.Label("资源id:", GUILayout.Width(55));
-        imgData.imgId = EditorGUILayout.IntField(imgData.imgId, GUILayout.Width(100));
+        imgData.i = EditorGUILayout.IntField(imgData.i, GUILayout.Width(100));
 
         if (GUILayout.Button("-", GUILayout.Width(20)))
         {
-            List<EffectImageData> listData = new List<EffectImageData>(m_frameData.arrImgData);
+            List<EffectImageData> listData = new List<EffectImageData>(m_frameData.aI);
             listData.Remove(imgData);
 
-            m_frameData.arrImgData = listData.ToArray();
+            m_frameData.aI = listData.ToArray();
         }
 
         GUILayout.EndHorizontal(); // 第1行
 
 
         GUILayout.BeginHorizontal(); // 第2行
-        Vector2 pos = new Vector2(imgData.posX, imgData.posY);
+        Vector2 pos = new Vector2(imgData.pX, imgData.pY);
         pos = EditorGUILayout.Vector2Field("位置：", pos);
-        imgData.posX = pos.x;
-        imgData.posY = pos.y;
+        imgData.pX = pos.x;
+        imgData.pY = pos.y;
         GUILayout.EndHorizontal(); // 第2行
 
         GUILayout.BeginHorizontal(); // 第3行
-        Vector2 scale = new Vector2(imgData.scaleX, imgData.scaleY);
+        Vector2 scale = new Vector2(imgData.sX, imgData.sY);
         scale = EditorGUILayout.Vector2Field("缩放：", scale);
-        imgData.scaleX = scale.x;
-        imgData.scaleY = scale.y;
+        imgData.sX = scale.x;
+        imgData.sY = scale.y;
         GUILayout.EndHorizontal(); // 第3行
 
         GUILayout.BeginHorizontal(); // 第4行
-        imgData.rotate = EditorGUILayout.FloatField("旋转：", imgData.rotate);
+        imgData.r = EditorGUILayout.FloatField("旋转：", imgData.r);
         GUILayout.EndHorizontal(); // 第4行
 
         GUILayout.BeginHorizontal(); // 第5行
-        Color32 clr = new Color32((byte)imgData.color[0], (byte)imgData.color[1], (byte)imgData.color[2], (byte)imgData.color[3]);
+        Color32 clr = new Color32((byte)imgData.c[0], (byte)imgData.c[1], (byte)imgData.c[2], (byte)imgData.c[3]);
         clr = EditorGUILayout.ColorField("颜色：", clr);
-        imgData.color[0] = clr.r;
-        imgData.color[1] = clr.g;
-        imgData.color[2] = clr.b;
-        imgData.color[3] = clr.a;
+        imgData.c[0] = clr.r;
+        imgData.c[1] = clr.g;
+        imgData.c[2] = clr.b;
+        imgData.c[3] = clr.a;
         GUILayout.EndHorizontal(); // 第5行
 
         GUILayout.FlexibleSpace();
@@ -554,7 +554,7 @@ public class EffectEditorWindow : EditorWindow
 
         if(GUILayout.Button("<"))
         {
-            List<EffectImageData> listData = new List<EffectImageData>(m_frameData.arrImgData);
+            List<EffectImageData> listData = new List<EffectImageData>(m_frameData.aI);
             int idx = listData.IndexOf(imgData);
 
             if (idx == 0)
@@ -562,14 +562,14 @@ public class EffectEditorWindow : EditorWindow
 
             listData.Remove(imgData);
             listData.Insert(idx - 1, imgData);
-            m_frameData.arrImgData = listData.ToArray();
+            m_frameData.aI = listData.ToArray();
         }
 
         GUILayout.Label("改层级", GUILayout.Width(40));
 
         if(GUILayout.Button(">"))
         {
-            List<EffectImageData> listData = new List<EffectImageData>(m_frameData.arrImgData);
+            List<EffectImageData> listData = new List<EffectImageData>(m_frameData.aI);
             int idx = listData.IndexOf(imgData);
 
             if (idx == listData.Count - 1)
@@ -577,7 +577,7 @@ public class EffectEditorWindow : EditorWindow
 
             listData.Remove(imgData);
             listData.Insert(idx + 1, imgData);
-            m_frameData.arrImgData = listData.ToArray();
+            m_frameData.aI = listData.ToArray();
         }
 
         GUILayout.EndHorizontal(); // 最后1行
@@ -590,10 +590,10 @@ public class EffectEditorWindow : EditorWindow
     // return:有效返回ture；否则false
     private bool CheckAssetIsValid(EffectAssetData assetData)
     {
-        if (string.IsNullOrEmpty(assetData.imgName))
+        if (string.IsNullOrEmpty(assetData.n))
             return false;
 
-        return CheckImgIsValid(assetData.imgId);
+        return CheckImgIsValid(assetData.i);
     }
 
     // 检测图片是否有效
@@ -612,29 +612,29 @@ public class EffectEditorWindow : EditorWindow
     // return:有效返回true；否则false
     private bool CheckFrameIsValid(EffectFrameData frameData)
     {
-        for(int i = 0; i < frameData.arrImgData.Length; ++i)
+        for(int i = 0; i < frameData.aI.Length; ++i)
         {
-            if (!CheckImgIsValid(frameData.arrImgData[i].imgId))
+            if (!CheckImgIsValid(frameData.aI[i].i))
                 return false;
         }
 
-        return m_dicFrameNum[frameData.frameNo] == 1;
+        return m_dicFrameNum[frameData.n] == 1;
     }
 
     // 检测特效数据是否有效
     // return:有效返回true；否则false
     private bool CheckEffectDataIsValid()
     {
-        for(int i = 0; i < m_effectData.arrAssetData.Length; ++i)
+        for(int i = 0; i < m_effectData.aA.Length; ++i)
         {
-            EffectAssetData assetData = m_effectData.arrAssetData[i];
-            if (!CheckImgIsValid(assetData.imgId))
+            EffectAssetData assetData = m_effectData.aA[i];
+            if (!CheckImgIsValid(assetData.i))
                 return false;
         }
 
-        for(int i = 0; i < m_effectData.arrFrameData.Length; ++i)
+        for(int i = 0; i < m_effectData.aF.Length; ++i)
         {
-            EffectFrameData frameData = m_effectData.arrFrameData[i];
+            EffectFrameData frameData = m_effectData.aF[i];
             if (!CheckFrameIsValid(frameData))
                 return false;
         }
@@ -657,25 +657,25 @@ public class EffectEditorWindow : EditorWindow
     public static EffectFrameData CopyFrameData(EffectFrameData frameData)
     {
         EffectFrameData nFrameData = new EffectFrameData();
-        nFrameData.frameNo = frameData.frameNo;
-        nFrameData.arrImgData = new EffectImageData[frameData.arrImgData.Length];
+        nFrameData.n = frameData.n;
+        nFrameData.aI = new EffectImageData[frameData.aI.Length];
 
-        for(int i = 0; i < frameData.arrImgData.Length; ++i)
+        for(int i = 0; i < frameData.aI.Length; ++i)
         {
-            EffectImageData imgData = frameData.arrImgData[i];
+            EffectImageData imgData = frameData.aI[i];
             EffectImageData nImgData = new EffectImageData();
 
-            nImgData.imgId = imgData.imgId;
-            nImgData.scaleX = imgData.scaleX;
-            nImgData.scaleY = imgData.scaleY;
-            nImgData.rotate = imgData.rotate;
+            nImgData.i = imgData.i;
+            nImgData.sX = imgData.sX;
+            nImgData.sY = imgData.sY;
+            nImgData.r = imgData.r;
 
-            nImgData.color[0] = imgData.color[0];
-            nImgData.color[1] = imgData.color[1];
-            nImgData.color[2] = imgData.color[2];
-            nImgData.color[3] = imgData.color[3];
+            nImgData.c[0] = imgData.c[0];
+            nImgData.c[1] = imgData.c[1];
+            nImgData.c[2] = imgData.c[2];
+            nImgData.c[3] = imgData.c[3];
 
-            nFrameData.arrImgData[i] = nImgData;
+            nFrameData.aI[i] = nImgData;
         }
 
         return nFrameData;

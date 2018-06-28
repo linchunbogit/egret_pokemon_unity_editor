@@ -9,12 +9,12 @@ public class EffectEditorUtil
     // return:返回秒数
     public static float CalcEffectTime(EffectData effData)
     {
-        int frameNum = effData.arrFrameData.Length;
-        if (effData.rate == 0 || frameNum < 1)
+        int frameNum = effData.aF.Length;
+        if (effData.r == 0 || frameNum < 1)
             return 0;
 
-        int lastFrameIdx = effData.arrFrameData[frameNum - 1].frameNo + 1; ;
-        return (1.0f / effData.rate) * lastFrameIdx;
+        int lastFrameIdx = effData.aF[frameNum - 1].n + 1; ;
+        return (1.0f / effData.r) * lastFrameIdx;
     }
 
     // 计算帧编号

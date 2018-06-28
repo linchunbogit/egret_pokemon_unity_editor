@@ -10,59 +10,59 @@ public class EffectEditorDefine
 // 特效的资源数据
 public class EffectAssetData
 {
-    public int imgId;           // 图片id
-    public string imgName;      // 图片名称
-    public int width;           // 图片宽度
-    public int height;          // 图片高度
+    public int i;           // 图片id
+    public string n;      // 图片名称
+    public int w;           // 图片宽度
+    public int h;          // 图片高度
 }
 
 
 // 特效图片数据
 public class EffectImageData
 {
-    public int imgId;           // 图片id
-    public float scaleX;        // 缩放x
-    public float scaleY;        // 缩放y
-    public float posX;          // 位置x
-    public float posY;          // 位置y
-    public float rotate;        // 旋转
-    public int[] color;         // 颜色
+    public int i;           // 图片id
+    public float sX;        // 缩放x
+    public float sY;        // 缩放y
+    public float pX;          // 位置x
+    public float pY;          // 位置y
+    public float r;        // 旋转
+    public int[] c;         // 颜色
 
     public EffectImageData()
     {
-        imgId = 0;
-        scaleX = 1;
-        scaleY = 1;
-        posX = 0;
-        posY = 0;
-        rotate = 0;
-        color = new int[] { 255, 255, 255, 255 };
+        i = 0;
+        sX = 1;
+        sY = 1;
+        pX = 0;
+        pY = 0;
+        r = 0;
+        c = new int[] { 255, 255, 255, 255 };
     }
 }
 
 // 帧数据
 public class EffectFrameData
 {
-    public int frameNo;                     // 帧编号 0开始
-    public EffectImageData[] arrImgData;    // 图片数据
+    public int n;                     // 帧编号 0开始
+    public EffectImageData[] aI;    // 图片数据
 
     public EffectFrameData()
     {
-        frameNo = 0;
-        arrImgData = new EffectImageData[0];
+        n = 0;
+        aI = new EffectImageData[0];
     }
 }
 
 // 特效配置数据
 public class EffectData
 {
-    public int rate;                            // 帧率
-    public EffectAssetData[] arrAssetData;      // 引用数据
-    public EffectFrameData[] arrFrameData;      // 所有的帧数据
+    public int r;                            // 帧率
+    public EffectAssetData[] aA;      // 引用数据
+    public EffectFrameData[] aF;      // 所有的帧数据
 
     public EffectData()
     {
-        arrAssetData = new EffectAssetData[0];
-        arrFrameData = new EffectFrameData[0];
+        aA = new EffectAssetData[0];
+        aF = new EffectFrameData[0];
     }
 }

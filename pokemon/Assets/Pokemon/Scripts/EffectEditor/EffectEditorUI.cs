@@ -46,7 +46,7 @@ public class EffectEditorUI : MonoBehaviour
         if (!m_isPlay || m_effectData == null)
             return;
 
-        int no = EffectEditorUtil.CalcFrameNo(m_runTime, m_effectData.rate);
+        int no = EffectEditorUtil.CalcFrameNo(m_runTime, m_effectData.r);
         if(no < m_listFrameData.Count)
             UpdateByFrame(m_effectData, m_listFrameData[no]);
         else
@@ -68,7 +68,7 @@ public class EffectEditorUI : MonoBehaviour
     // @effData:特效数据
     public void Play(EffectData effData)
     {
-        if (effData.arrFrameData.Length < 2)
+        if (effData.aF.Length < 2)
             return;
 
         m_listFrameData.Clear();
@@ -84,41 +84,41 @@ public class EffectEditorUI : MonoBehaviour
     // 模拟帧数据
     private void SimulateFrameData()
     {
-        int defFrameNum = m_effectData.arrFrameData.Length;
+        int defFrameNum = m_effectData.aF.Length;
         for (int i = 0; i < defFrameNum - 1; ++i)
         {
-            EffectFrameData frame1 = m_effectData.arrFrameData[i];
-            EffectFrameData frame2 = m_effectData.arrFrameData[i + 1];
+            EffectFrameData frame1 = m_effectData.aF[i];
+            EffectFrameData frame2 = m_effectData.aF[i + 1];
 
             m_listFrameData.Add(frame1);
 
-            for (int j = frame1.frameNo + 1; j < frame2.frameNo; ++j)
+            for (int j = frame1.n + 1; j < frame2.n; ++j)
             {
                 EffectFrameData nFrameData = new EffectFrameData();
-                nFrameData.frameNo = j;
+                nFrameData.n = j;
 
                 m_listFrameData.Add(nFrameData);
 
                 List<EffectImageData> listImgData = new List<EffectImageData>();
 
-                for (int k = 0; k < frame1.arrImgData.Length; ++k)
+                for (int k = 0; k < frame1.aI.Length; ++k)
                 {
-                    EffectImageData imgData1 = frame1.arrImgData[k];
-                    EffectImageData imgData2 = GetImgDataFromFrame(frame2, imgData1.imgId);
+                    EffectImageData imgData1 = frame1.aI[k];
+                    EffectImageData imgData2 = GetImgDataFromFrame(frame2, imgData1.i);
 
                     if(imgData2 != null)
                     {
                         EffectImageData nImgData = new EffectImageData();
-                        nImgData.imgId = imgData1.imgId;
-                        nImgData.scaleX = EffectEditorUtil.EvaluteInperpolation(imgData1.scaleX, imgData2.scaleX, frame1.frameNo, frame2.frameNo, j);
-                        nImgData.scaleY = EffectEditorUtil.EvaluteInperpolation(imgData1.scaleY, imgData2.scaleY, frame1.frameNo, frame2.frameNo, j);
-                        nImgData.posX = EffectEditorUtil.EvaluteInperpolation(imgData1.posX, imgData2.posX, frame1.frameNo, frame2.frameNo, j);
-                        nImgData.posY = EffectEditorUtil.EvaluteInperpolation(imgData1.posY, imgData2.posY, frame1.frameNo, frame2.frameNo, j);
-                        nImgData.rotate = EffectEditorUtil.EvaluteInperpolation(imgData1.rotate, imgData2.rotate, frame1.frameNo, frame2.frameNo, j);
-                        nImgData.color[0] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.color[0], imgData2.color[0], frame1.frameNo, frame2.frameNo, j);
-                        nImgData.color[1] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.color[1], imgData2.color[1], frame1.frameNo, frame2.frameNo, j);
-                        nImgData.color[2] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.color[2], imgData2.color[2], frame1.frameNo, frame2.frameNo, j);
-                        nImgData.color[3] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.color[3], imgData2.color[3], frame1.frameNo, frame2.frameNo, j);
+                        nImgData.i = imgData1.i;
+                        nImgData.sX = EffectEditorUtil.EvaluteInperpolation(imgData1.sX, imgData2.sX, frame1.n, frame2.n, j);
+                        nImgData.sY = EffectEditorUtil.EvaluteInperpolation(imgData1.sY, imgData2.sY, frame1.n, frame2.n, j);
+                        nImgData.pX = EffectEditorUtil.EvaluteInperpolation(imgData1.pX, imgData2.pX, frame1.n, frame2.n, j);
+                        nImgData.pY = EffectEditorUtil.EvaluteInperpolation(imgData1.pY, imgData2.pY, frame1.n, frame2.n, j);
+                        nImgData.r = EffectEditorUtil.EvaluteInperpolation(imgData1.r, imgData2.r, frame1.n, frame2.n, j);
+                        nImgData.c[0] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[0], imgData2.c[0], frame1.n, frame2.n, j);
+                        nImgData.c[1] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[1], imgData2.c[1], frame1.n, frame2.n, j);
+                        nImgData.c[2] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[2], imgData2.c[2], frame1.n, frame2.n, j);
+                        nImgData.c[3] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[3], imgData2.c[3], frame1.n, frame2.n, j);
 
                         listImgData.Add(nImgData);
                     }
@@ -127,21 +127,21 @@ public class EffectEditorUI : MonoBehaviour
                         listImgData.Add(imgData1);
                     }
 
-                    nFrameData.arrImgData = listImgData.ToArray();
+                    nFrameData.aI = listImgData.ToArray();
                 }
             }
         }
 
-        m_listFrameData.Add(m_effectData.arrFrameData[defFrameNum - 1]);
+        m_listFrameData.Add(m_effectData.aF[defFrameNum - 1]);
     }
 
     // 从帧数据里面获取指定id的图片数据
     private EffectImageData GetImgDataFromFrame(EffectFrameData frameData, int imgId)
     {
-        for(int i =0; i < frameData.arrImgData.Length; ++i)
+        for(int i =0; i < frameData.aI.Length; ++i)
         {
-            EffectImageData imgData = frameData.arrImgData[i];
-            if (imgData.imgId == imgId)
+            EffectImageData imgData = frameData.aI[i];
+            if (imgData.i == imgId)
                 return imgData;
         }
 
@@ -154,9 +154,9 @@ public class EffectEditorUI : MonoBehaviour
     public void UpdateByFrame(EffectData effData, EffectFrameData frameData)
     {
         // 先创建足够的图片资源
-        if(m_listImg.Count < frameData.arrImgData.Length)
+        if(m_listImg.Count < frameData.aI.Length)
         {
-            for(int i = m_listImg.Count; i < frameData.arrImgData.Length; ++i)
+            for(int i = m_listImg.Count; i < frameData.aI.Length; ++i)
             {
                 Image img = Image.Instantiate(m_imgTemplate);
                 img.transform.SetParent(transform);
@@ -166,25 +166,25 @@ public class EffectEditorUI : MonoBehaviour
             }
         }
 
-        for(int i = 0; i < frameData.arrImgData.Length; ++i)
+        for(int i = 0; i < frameData.aI.Length; ++i)
         {
             Image img = m_listImg[i];
-            EffectImageData imgData = frameData.arrImgData[i];
-            EffectAssetData assetData = GetEffectImgAssetData(effData, imgData.imgId);
+            EffectImageData imgData = frameData.aI[i];
+            EffectAssetData assetData = GetEffectImgAssetData(effData, imgData.i);
             if(assetData == null)
                 continue;
 
             img.gameObject.SetActive(true);
 
-            img.sprite = Resources.Load<Sprite>("EffectRaw/" + assetData.imgName);
-            img.rectTransform.sizeDelta = new Vector2(assetData.width, assetData.height);
-            img.transform.localPosition = new Vector3(imgData.posX, imgData.posY, 0);
-            img.transform.localRotation = Quaternion.Euler(0, 0, imgData.rotate);
-            img.transform.localScale = new Vector2(imgData.scaleX, imgData.scaleY);
-            img.color = new Color32((byte)imgData.color[0], (byte)imgData.color[1], (byte)imgData.color[2], (byte)imgData.color[3]);
+            img.sprite = Resources.Load<Sprite>("EffectRaw/" + assetData.n);
+            img.rectTransform.sizeDelta = new Vector2(assetData.w, assetData.h);
+            img.transform.localPosition = new Vector3(imgData.pX, imgData.pY, 0);
+            img.transform.localRotation = Quaternion.Euler(0, 0, imgData.r);
+            img.transform.localScale = new Vector2(imgData.sX, imgData.sY);
+            img.color = new Color32((byte)imgData.c[0], (byte)imgData.c[1], (byte)imgData.c[2], (byte)imgData.c[3]);
         }
 
-        for(int i = frameData.arrImgData.Length; i < m_listImg.Count; ++i)
+        for(int i = frameData.aI.Length; i < m_listImg.Count; ++i)
         {
             Image img = m_listImg[i];
             img.gameObject.SetActive(false);
@@ -198,10 +198,10 @@ public class EffectEditorUI : MonoBehaviour
     // return:资源数据
     private EffectAssetData GetEffectImgAssetData(EffectData effData, int id)
     {
-        for (int i = 0; i < effData.arrAssetData.Length; ++i)
+        for (int i = 0; i < effData.aA.Length; ++i)
         {
-            EffectAssetData assetData = effData.arrAssetData[i];
-            if (assetData.imgId == id)
+            EffectAssetData assetData = effData.aA[i];
+            if (assetData.i == id)
             {
                 return assetData;
             }
