@@ -144,7 +144,7 @@ public class EffectEditorWindow : EditorWindow
 
         if (GUILayout.Button("加载", GUILayout.Height(30), GUILayout.Width(50)))
         {
-            string path = "EffectData/" + m_effectId;
+            string path = "EffectData/effectjson" + m_effectId;
             TextAsset ta = Resources.Load<TextAsset>(path);
             if (ta == null)
             {
@@ -179,7 +179,7 @@ public class EffectEditorWindow : EditorWindow
                 return;
             }
 
-            string path = Application.dataPath + "/Pokemon/Resources/EffectData/" + m_effectId + ".txt";
+            string path = Application.dataPath + "/Pokemon/Resources/EffectData/effectjson" + m_effectId + ".txt";
             string json = Serializer.Serialize(m_effectData);
 
             StreamWriter sw = new StreamWriter(path, false);
