@@ -69,9 +69,9 @@ public class SkillEditorWindow : EditorWindow
         GUILayout.BeginHorizontal();
 
         m_dicHurmNum.Clear();
-        for (int i = 0; i < m_skillData.arrHurmData.Length; ++i)
+        for (int i = 0; i < m_skillData.aH.Length; ++i)
         {
-            int id = m_skillData.arrHurmData[i].id;
+            int id = m_skillData.aH[i].i;
             if (m_dicHurmNum.ContainsKey(id))
                 m_dicHurmNum[id]++;
             else
@@ -79,9 +79,9 @@ public class SkillEditorWindow : EditorWindow
         }
 
         m_dicDispNum.Clear();
-        for (int i = 0; i < m_skillData.arrDisplayData.Length; ++i)
+        for (int i = 0; i < m_skillData.aD.Length; ++i)
         {
-            int id = m_skillData.arrDisplayData[i].id;
+            int id = m_skillData.aD[i].i;
             if (m_dicDispNum.ContainsKey(id))
                 m_dicDispNum[id]++;
             else
@@ -112,7 +112,7 @@ public class SkillEditorWindow : EditorWindow
 
         if (GUILayout.Button("加载", GUILayout.Height(30), GUILayout.Width(50)))
         {
-            string path = "SkillData/" + m_skillId;
+            string path = "SkillData/skilljson" + m_skillId;
             TextAsset ta = Resources.Load<TextAsset>(path);
             if(ta == null)
             {
@@ -136,34 +136,34 @@ public class SkillEditorWindow : EditorWindow
                 return;
             }
 
-            for(int i = 0; i < m_skillData.arrActionData.Length; ++i)
+            for(int i = 0; i < m_skillData.aA.Length; ++i)
             {
-                if(!CheckActionIsValid(m_skillData.arrActionData[i]))
+                if(!CheckActionIsValid(m_skillData.aA[i]))
                 {
                     ShowNotification(new GUIContent("保存失败！存在技能行为报错"));
                     return;
                 }
             }
 
-            for (int i = 0; i < m_skillData.arrHurmData.Length; ++i)
+            for (int i = 0; i < m_skillData.aH.Length; ++i)
             {
-                if (!CheckHurmIsValid(m_skillData.arrHurmData[i].id))
+                if (!CheckHurmIsValid(m_skillData.aH[i].i))
                 {
                     ShowNotification(new GUIContent("保存失败！存在技能伤害报错"));
                     return;
                 }
             }
 
-            for (int i = 0; i < m_skillData.arrDisplayData.Length; ++i)
+            for (int i = 0; i < m_skillData.aD.Length; ++i)
             {
-                if (!CheckDispIsValid(m_skillData.arrDisplayData[i].id))
+                if (!CheckDispIsValid(m_skillData.aD[i].i))
                 {
                     ShowNotification(new GUIContent("保存失败！存在技能表现报错"));
                     return;
                 }
             }
 
-            string path = Application.dataPath + "/Pokemon/Resources/SkillData/" + m_skillId + ".txt";
+            string path = Application.dataPath + "/Pokemon/Resources/SkillData/skilljson" + m_skillId + ".txt";
             string json = Serializer.Serialize(m_skillData);
 
             StreamWriter sw = new StreamWriter(path, false);
@@ -213,9 +213,9 @@ public class SkillEditorWindow : EditorWindow
         GUILayout.BeginVertical(GUILayout.Height(630), GUILayout.ExpandHeight(true));
         m_actionScroPos = GUILayout.BeginScrollView(m_actionScroPos, false, false);
 
-        for (int i = 0; i < m_skillData.arrActionData.Length; ++i)
+        for (int i = 0; i < m_skillData.aA.Length; ++i)
         {
-            SkillActionData actionData = m_skillData.arrActionData[i];
+            SkillActionData actionData = m_skillData.aA[i];
             DrawActionItem(actionData);
         }
 
@@ -227,12 +227,12 @@ public class SkillEditorWindow : EditorWindow
         // +按钮
         if (GUILayout.Button("+", GUILayout.Width(MENU_WIDTH), GUILayout.Height(40)))
         {
-            List<SkillActionData> listAction = new List<SkillActionData>(m_skillData.arrActionData);
+            List<SkillActionData> listAction = new List<SkillActionData>(m_skillData.aA);
             SkillActionData actData = new SkillActionData();
-            actData.arrHurmId = new int[0];
+            actData.aH = new int[0];
             listAction.Add(actData);
 
-            m_skillData.arrActionData = listAction.ToArray();
+            m_skillData.aA = listAction.ToArray();
         }
 
         GUILayout.EndVertical(); // 绘制行为
@@ -256,9 +256,9 @@ public class SkillEditorWindow : EditorWindow
         GUILayout.BeginVertical(GUILayout.Height(630), GUILayout.ExpandHeight(true));
         m_hurmScroPos = GUILayout.BeginScrollView(m_hurmScroPos, false, false);
 
-        for (int i = 0; i < m_skillData.arrHurmData.Length; ++i)
+        for (int i = 0; i < m_skillData.aH.Length; ++i)
         {
-            SkillHurmData hurmData = m_skillData.arrHurmData[i];
+            SkillHurmData hurmData = m_skillData.aH[i];
             DrawHurmItem(hurmData);
         }
 
@@ -270,13 +270,13 @@ public class SkillEditorWindow : EditorWindow
         // +按钮
         if (GUILayout.Button("+", GUILayout.Width(MENU_WIDTH), GUILayout.Height(40)))
         {
-            List<SkillHurmData> listHurm = new List<SkillHurmData>(m_skillData.arrHurmData);
+            List<SkillHurmData> listHurm = new List<SkillHurmData>(m_skillData.aH);
             SkillHurmData hurmData = new SkillHurmData();
-            hurmData.arrDisplayId = new int[0];
+            hurmData.aD = new int[0];
 
             listHurm.Add(hurmData);
 
-            m_skillData.arrHurmData = listHurm.ToArray();
+            m_skillData.aH = listHurm.ToArray();
         }
 
         GUILayout.EndVertical(); // 绘制行为
@@ -300,9 +300,9 @@ public class SkillEditorWindow : EditorWindow
         GUILayout.BeginVertical(GUILayout.Height(630), GUILayout.ExpandHeight(true));
         m_displayScroPos = GUILayout.BeginScrollView(m_displayScroPos, false, false);
 
-        for (int i = 0; i < m_skillData.arrDisplayData.Length; ++i)
+        for (int i = 0; i < m_skillData.aD.Length; ++i)
         {
-            SkillDisplayData dispData = m_skillData.arrDisplayData[i];
+            SkillDisplayData dispData = m_skillData.aD[i];
             DrawDisplayItem(dispData);
         }
 
@@ -314,10 +314,10 @@ public class SkillEditorWindow : EditorWindow
         // +按钮
         if (GUILayout.Button("+", GUILayout.Width(MENU_WIDTH), GUILayout.Height(40)))
         {
-            List<SkillDisplayData> listDisp = new List<SkillDisplayData>(m_skillData.arrDisplayData);
+            List<SkillDisplayData> listDisp = new List<SkillDisplayData>(m_skillData.aD);
             listDisp.Add(new SkillDisplayData());
 
-            m_skillData.arrDisplayData = listDisp.ToArray();
+            m_skillData.aD = listDisp.ToArray();
         }
 
         GUILayout.EndVertical(); // 绘制行为
@@ -337,74 +337,82 @@ public class SkillEditorWindow : EditorWindow
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("行为类型:", GUILayout.Width(55));
-        actionData.actionType = (int)EditorGUILayout.Popup(actionData.actionType, ARR_ACTION_TYPE_NAME, GUILayout.Width(100));
+        actionData.a = (int)EditorGUILayout.Popup(actionData.a, ARR_ACTION_TYPE_NAME, GUILayout.Width(100));
         //GUILayout.FlexibleSpace();
 
         if (GUILayout.Button("-", GUILayout.Width(20)))
         {
-            List<SkillActionData> listAction = new List<SkillActionData>(m_skillData.arrActionData);
+            List<SkillActionData> listAction = new List<SkillActionData>(m_skillData.aA);
             listAction.Remove(actionData);
 
-            m_skillData.arrActionData = listAction.ToArray();
+            m_skillData.aA = listAction.ToArray();
         }
 
         GUILayout.EndHorizontal();
 
-        if (actionData.actionType == (int)SkillActionType.PLAY_EFFECT) // 播放特效
+        if (actionData.a == (int)SkillActionType.PLAY_EFFECT) // 播放特效
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label("特效ID:", GUILayout.Width(55));
-            actionData.effectId = EditorGUILayout.IntField(actionData.effectId, GUILayout.Width(100));
+            actionData.e = EditorGUILayout.IntField(actionData.e, GUILayout.Width(100));
             GUILayout.Label("播放时间:", GUILayout.Width(55));
-            actionData.time = EditorGUILayout.FloatField(actionData.time, GUILayout.Width(100));
+            actionData.t = EditorGUILayout.FloatField(actionData.t, GUILayout.Width(100));
+
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("坐标X:", GUILayout.Width(55));
+            actionData.x = EditorGUILayout.IntField(actionData.x, GUILayout.Width(100));
+            GUILayout.Label("坐标Y:", GUILayout.Width(55));
+            actionData.y = EditorGUILayout.IntField(actionData.y, GUILayout.Width(100));
             GUILayout.EndHorizontal();
         }
-        else if (actionData.actionType == (int)SkillActionType.CRASH_TARGET) // 冲向目标
+        else if (actionData.a == (int)SkillActionType.CRASH_TARGET) // 冲向目标
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label("移动速度:", GUILayout.Width(55));
-            actionData.speed = EditorGUILayout.IntField(actionData.speed, GUILayout.Width(100));
+            actionData.s = EditorGUILayout.IntField(actionData.s, GUILayout.Width(100));
             GUILayout.EndHorizontal();
         }
-        else if (actionData.actionType == (int)SkillActionType.CRASH_POS) // 冲向位置
+        else if (actionData.a == (int)SkillActionType.CRASH_POS) // 冲向位置
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label("坐标X:", GUILayout.Width(55));
-            actionData.posX = EditorGUILayout.IntField(actionData.posX, GUILayout.Width(100));
+            actionData.x = EditorGUILayout.IntField(actionData.x, GUILayout.Width(100));
             GUILayout.Label("坐标Y:", GUILayout.Width(55));
-            actionData.posY = EditorGUILayout.IntField(actionData.posY, GUILayout.Width(100));
+            actionData.y = EditorGUILayout.IntField(actionData.y, GUILayout.Width(100));
             GUILayout.EndHorizontal();
         }
-        else if (actionData.actionType == (int)SkillActionType.SHOOT_BULLET) // 发射子弹
+        else if (actionData.a == (int)SkillActionType.SHOOT_BULLET) // 发射子弹
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label("特效ID:", GUILayout.Width(55));
-            actionData.effectId = EditorGUILayout.IntField(actionData.effectId, GUILayout.Width(100));
+            actionData.e = EditorGUILayout.IntField(actionData.e, GUILayout.Width(100));
             GUILayout.Label("子弹速度:", GUILayout.Width(55));
-            actionData.speed = EditorGUILayout.IntField(actionData.speed, GUILayout.Width(100));
+            actionData.s = EditorGUILayout.IntField(actionData.s, GUILayout.Width(100));
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("同时受击:", GUILayout.Width(55));
-            bool sameTimeHit = actionData.sameTimeHited == 1;
+            bool sameTimeHit = actionData.sH == 1;
             sameTimeHit = EditorGUILayout.Toggle(sameTimeHit, GUILayout.Width(100));
-            actionData.sameTimeHited = sameTimeHit ? 1 : 0;
+            actionData.sH = sameTimeHit ? 1 : 0;
             GUILayout.EndHorizontal();
         }
 
 
         GUILayout.BeginVertical();
-        for(int i = 0; i < actionData.arrHurmId.Length; ++i)
+        for(int i = 0; i < actionData.aH.Length; ++i)
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label("伤害id:", GUILayout.Width(55));
-            actionData.arrHurmId[i] = EditorGUILayout.IntField(actionData.arrHurmId[i], GUILayout.Width(100));
+            actionData.aH[i] = EditorGUILayout.IntField(actionData.aH[i], GUILayout.Width(100));
 
             if (GUILayout.Button("-", GUILayout.Width(20)))
             {
-                List<int> listId = new List<int>(actionData.arrHurmId);
+                List<int> listId = new List<int>(actionData.aH);
                 listId.RemoveAt(i);
-                actionData.arrHurmId = listId.ToArray();
+                actionData.aH = listId.ToArray();
                 break;
             }
 
@@ -417,10 +425,10 @@ public class SkillEditorWindow : EditorWindow
         // +按钮
         if (GUILayout.Button("+", GUILayout.Width(MENU_WIDTH), GUILayout.Height(20), GUILayout.Width(345)))
         {
-            List<int> listId = new List<int>(actionData.arrHurmId);
+            List<int> listId = new List<int>(actionData.aH);
             listId.Add(0);
 
-            actionData.arrHurmId = listId.ToArray();
+            actionData.aH = listId.ToArray();
         }
 
         GUILayout.EndVertical();
@@ -431,7 +439,7 @@ public class SkillEditorWindow : EditorWindow
     // @hurmData:伤害数据
     private void DrawHurmItem(SkillHurmData hurmData)
     {
-        if(CheckHurmIsValid(hurmData.id))
+        if(CheckHurmIsValid(hurmData.i))
             GUI.backgroundColor = Color.green;
         else
             GUI.backgroundColor = Color.red;
@@ -441,40 +449,40 @@ public class SkillEditorWindow : EditorWindow
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("伤害id:", GUILayout.Width(55));
-        hurmData.id = EditorGUILayout.IntField(hurmData.id, GUILayout.Width(100));
+        hurmData.i = EditorGUILayout.IntField(hurmData.i, GUILayout.Width(100));
         //GUILayout.FlexibleSpace();
 
         if (GUILayout.Button("-", GUILayout.Width(20)))
         {
-            List<SkillHurmData> listHurm = new List<SkillHurmData>(m_skillData.arrHurmData);
+            List<SkillHurmData> listHurm = new List<SkillHurmData>(m_skillData.aH);
             listHurm.Remove(hurmData);
 
-            m_skillData.arrHurmData = listHurm.ToArray();
+            m_skillData.aH = listHurm.ToArray();
         }
 
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("触发时间:", GUILayout.Width(55));
-        hurmData.time = EditorGUILayout.FloatField(hurmData.time, GUILayout.Width(100));
+        hurmData.t = EditorGUILayout.FloatField(hurmData.t, GUILayout.Width(100));
         GUILayout.Label("伤害比重:", GUILayout.Width(55));
-        hurmData.hurmPct = EditorGUILayout.FloatField(hurmData.hurmPct, GUILayout.Width(100));
+        hurmData.h = EditorGUILayout.FloatField(hurmData.h, GUILayout.Width(100));
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 
 
         GUILayout.BeginVertical();
-        for (int i = 0; i < hurmData.arrDisplayId.Length; ++i)
+        for (int i = 0; i < hurmData.aD.Length; ++i)
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label("表现id:", GUILayout.Width(55));
-            hurmData.arrDisplayId[i] = EditorGUILayout.IntField(hurmData.arrDisplayId[i], GUILayout.Width(100));
+            hurmData.aD[i] = EditorGUILayout.IntField(hurmData.aD[i], GUILayout.Width(100));
 
             if (GUILayout.Button("-", GUILayout.Width(20)))
             {
-                List<int> listId = new List<int>(hurmData.arrDisplayId);
+                List<int> listId = new List<int>(hurmData.aD);
                 listId.RemoveAt(i);
-                hurmData.arrDisplayId = listId.ToArray();
+                hurmData.aD = listId.ToArray();
                 break;
             }
 
@@ -487,10 +495,10 @@ public class SkillEditorWindow : EditorWindow
         // +按钮
         if (GUILayout.Button("+", GUILayout.Width(MENU_WIDTH), GUILayout.Height(20), GUILayout.Width(345)))
         {
-            List<int> listId = new List<int>(hurmData.arrDisplayId);
+            List<int> listId = new List<int>(hurmData.aD);
             listId.Add(0);
 
-            hurmData.arrDisplayId = listId.ToArray();
+            hurmData.aD = listId.ToArray();
         }
 
 
@@ -503,7 +511,7 @@ public class SkillEditorWindow : EditorWindow
     // @dispData:伤害表现数据
     private void DrawDisplayItem(SkillDisplayData dispData)
     {
-        if(CheckDispIsValid(dispData.id))
+        if(CheckDispIsValid(dispData.i))
             GUI.backgroundColor = Color.green;
         else
             GUI.backgroundColor = Color.red;
@@ -513,23 +521,31 @@ public class SkillEditorWindow : EditorWindow
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("表现id:", GUILayout.Width(55));
-        dispData.id = EditorGUILayout.IntField(dispData.id, GUILayout.Width(100));
+        dispData.i = EditorGUILayout.IntField(dispData.i, GUILayout.Width(100));
 
         if (GUILayout.Button("-", GUILayout.Width(20)))
         {
-            List<SkillDisplayData> listDisp = new List<SkillDisplayData>(m_skillData.arrDisplayData);
+            List<SkillDisplayData> listDisp = new List<SkillDisplayData>(m_skillData.aD);
             listDisp.Remove(dispData);
 
-            m_skillData.arrDisplayData = listDisp.ToArray();
+            m_skillData.aD = listDisp.ToArray();
         }
 
         GUILayout.EndHorizontal();
 
-        GUILayout.BeginHorizontal();
+        GUILayout.BeginHorizontal(); // 第2行
         GUILayout.Label("表现类型:", GUILayout.Width(55));
-        dispData.displayType = (int)EditorGUILayout.Popup(dispData.displayType, ARR_DISPLAY_TYPE_NAME, GUILayout.Width(100));
+        dispData.d = (int)EditorGUILayout.Popup(dispData.d, ARR_DISPLAY_TYPE_NAME, GUILayout.Width(100));
+           
+        if(dispData.d == (int)SkillDisplayType.EFFECT)
+        {
+            GUILayout.Label("特效id:", GUILayout.Width(55));
+            dispData.e = EditorGUILayout.IntField(dispData.e, GUILayout.Width(100));
+        }
+
         GUILayout.FlexibleSpace();
-        GUILayout.EndHorizontal();
+        GUILayout.EndHorizontal(); // 第2行
+
 
 
         GUILayout.EndVertical();
@@ -540,9 +556,9 @@ public class SkillEditorWindow : EditorWindow
     // return:有效返回true；否则false
     private bool CheckActionIsValid(SkillActionData actionData)
     {
-        for(int i = 0; i < actionData.arrHurmId.Length; ++i)
+        for(int i = 0; i < actionData.aH.Length; ++i)
         {
-            int harmId = actionData.arrHurmId[i];
+            int harmId = actionData.aH[i];
             if (!CheckHurmIsValid(harmId))
                 return false;
         }
@@ -555,10 +571,29 @@ public class SkillEditorWindow : EditorWindow
     // return:有效返回true；否则false
     private bool CheckHurmIsValid(int hurmId)
     {
-        if (m_dicHurmNum.ContainsKey(hurmId))
-            return m_dicHurmNum[hurmId] == 1;
+        if (!m_dicHurmNum.ContainsKey(hurmId))
+            return false;
 
-        return false;
+        if (m_dicHurmNum[hurmId] != 1)
+            return false;
+
+        for(int i = 0; i < m_skillData.aH.Length; ++i)
+        {
+            SkillHurmData hurmData = m_skillData.aH[i];
+            if(hurmData.i != hurmId)
+                continue; 
+
+            for(int j = 0; j < hurmData.aD.Length; ++j)
+            {
+                int dispId = hurmData.aD[i];
+                if(!CheckDispIsValid(dispId))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     // 检测表现是否有效
@@ -579,9 +614,9 @@ public class SkillEditorWindow : EditorWindow
     private static SkillData CreateNewSkillData()
     {
         SkillData skillData = new SkillData();
-        skillData.arrActionData = new SkillActionData[0];
-        skillData.arrDisplayData = new SkillDisplayData[0];
-        skillData.arrHurmData = new SkillHurmData[0];
+        skillData.aA = new SkillActionData[0];
+        skillData.aD = new SkillDisplayData[0];
+        skillData.aH = new SkillHurmData[0];
 
         return skillData;
     }
