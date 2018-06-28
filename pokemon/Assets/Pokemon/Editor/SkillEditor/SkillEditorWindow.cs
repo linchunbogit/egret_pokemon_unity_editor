@@ -166,22 +166,10 @@ public class SkillEditorWindow : EditorWindow
             string path = Application.dataPath + "/Pokemon/Resources/SkillData/" + m_skillId + ".txt";
             string json = Serializer.Serialize(m_skillData);
 
-            FileInfo fInfo = new FileInfo(path);
-            if(!fInfo.Exists)
-            {
-                FileStream fs = fInfo.Create();
-                StreamWriter sw = new StreamWriter(fs);
-                sw.Write(json);
-                fs.Dispose();
-                fs.Close();
-            }
-            else
-            {
-                StreamWriter sw = new StreamWriter(path, false);
-                sw.Write(json);
-                sw.Dispose();
-                sw.Close();
-            }
+            StreamWriter sw = new StreamWriter(path, false);
+            sw.Write(json);
+            sw.Dispose();
+            sw.Close();
 
             AssetDatabase.Refresh();
             ShowNotification(new GUIContent("保存成功！"));
@@ -350,7 +338,7 @@ public class SkillEditorWindow : EditorWindow
         GUILayout.BeginHorizontal();
         GUILayout.Label("行为类型:", GUILayout.Width(55));
         actionData.actionType = (int)EditorGUILayout.Popup(actionData.actionType, ARR_ACTION_TYPE_NAME, GUILayout.Width(100));
-        GUILayout.FlexibleSpace();
+        //GUILayout.FlexibleSpace();
 
         if (GUILayout.Button("-", GUILayout.Width(20)))
         {
@@ -448,13 +436,13 @@ public class SkillEditorWindow : EditorWindow
         else
             GUI.backgroundColor = Color.red;
 
-        GUILayout.BeginVertical(new GUIStyle(EditorStyles.textField), GUILayout.Width(MENU_WIDTH), GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
+        GUILayout.BeginVertical(new GUIStyle(EditorStyles.textField), GUILayout.Width(MENU_WIDTH-20));
         GUI.backgroundColor = m_defaultBgClr;
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("伤害id:", GUILayout.Width(55));
         hurmData.id = EditorGUILayout.IntField(hurmData.id, GUILayout.Width(100));
-        GUILayout.FlexibleSpace();
+        //GUILayout.FlexibleSpace();
 
         if (GUILayout.Button("-", GUILayout.Width(20)))
         {
@@ -526,7 +514,6 @@ public class SkillEditorWindow : EditorWindow
         GUILayout.BeginHorizontal();
         GUILayout.Label("表现id:", GUILayout.Width(55));
         dispData.id = EditorGUILayout.IntField(dispData.id, GUILayout.Width(100));
-        GUILayout.FlexibleSpace();
 
         if (GUILayout.Button("-", GUILayout.Width(20)))
         {
@@ -553,7 +540,6 @@ public class SkillEditorWindow : EditorWindow
     // return:有效返回true；否则false
     private bool CheckActionIsValid(SkillActionData actionData)
     {
-        List<int> listId = new List<int>();
         for(int i = 0; i < actionData.arrHurmId.Length; ++i)
         {
             int harmId = actionData.arrHurmId[i];

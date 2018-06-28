@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Pokemon/Scenes/scene_skill_editor.unity
+- path: Assets/Pokemon/Scenes/scene_effect_editor.unity
   isLoaded: 1
   isActive: 1
