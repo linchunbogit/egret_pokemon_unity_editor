@@ -61,6 +61,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Pokemon\Scripts\EffectEditor\EffectEditorDefine.cs" />
+    <Compile Include="Assets\Pokemon\Scripts\EffectEditor\EffectEditorUI.cs" />
+    <Compile Include="Assets\Pokemon\Scripts\EffectEditor\EffectEditorUtil.cs" />
     <Compile Include="Assets\Pokemon\Scripts\MinJson.cs" />
     <None Include="Assets\Pokemon\Resources\SkillData\2244.txt" />
     <None Include="Assets\Pokemon\Resources\EffectData\0.txt" />
@@ -68,6 +71,7 @@
     <None Include="Assets\Pokemon\Resources\SkillData\22444.txt" />
     <None Include="Assets\Pokemon\Resources\SkillData\22.txt" />
     <None Include="Assets\Pokemon\Resources\EffectData\1.txt" />
+    <None Include="Assets\Pokemon\Resources\EffectData\2.txt" />
     <None Include="Assets\Pokemon\Resources\SkillData\44.txt" />
     <None Include="Assets\Pokemon\Resources\SkillData\1.txt" />
     <Reference Include="UnityEditor.StandardEvents">
