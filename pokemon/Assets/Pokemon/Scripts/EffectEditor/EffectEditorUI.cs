@@ -20,7 +20,6 @@ public class EffectEditorUI : MonoBehaviour
     private List<Image> m_listImg;      // 图片实例列表
 
     private EffectData m_effectData;    // 当前播放的特效的数据
-    private List<EffectFrameData> m_listFrameData;      // 模拟后得到的帧数据
 
     public bool IsPlay { get { return m_isPlay; } }
 
@@ -29,7 +28,6 @@ public class EffectEditorUI : MonoBehaviour
         s_inst = this;
         m_isPlay = false;
         m_listImg = new List<Image>();
-        m_listFrameData = new List<EffectFrameData>();
 
         //gameObject.hideFlags = HideFlags.NotEditable;
         //m_imgTemplate.gameObject.hideFlags = HideFlags.NotEditable;
@@ -46,22 +44,24 @@ public class EffectEditorUI : MonoBehaviour
         if (!m_isPlay || m_effectData == null)
             return;
 
-        int no = EffectEditorUtil.CalcFrameNo(m_runTime, m_effectData.r);
-        if(no < m_listFrameData.Count)
-            UpdateByFrame(m_effectData, m_listFrameData[no]);
-        else
-            m_isPlay = false;
-
-
-        if (m_runTime >= m_endTime)
+        if(m_runTime > m_endTime)
         {
             m_isPlay = false;
+            HideAllImg();
+            return;
         }
+
+        int no = EffectEditorUtil.CalcFrameNo(m_runTime, m_effectData.r);
+        EffectFrameData effData = EffectEditorUtil.SimulateFrameData(m_effectData, no);
+
+        if (effData == null)
+            m_isPlay = false;
+        else
+            UpdateByFrame(m_effectData, effData);
 
         m_runTime += Time.deltaTime;
 
         Debug.Log(m_runTime);
-
     }
 
     // 播放特效
@@ -71,82 +71,80 @@ public class EffectEditorUI : MonoBehaviour
         if (effData.aF.Length < 2)
             return;
 
-        m_listFrameData.Clear();
-
         m_isPlay = true;
         m_effectData = effData;
         m_runTime = 0;
         m_endTime = EffectEditorUtil.CalcEffectTime(effData);
 
-        SimulateFrameData();
+        //SimulateFrameData();
     }
 
     // 模拟帧数据
-    private void SimulateFrameData()
-    {
-        int defFrameNum = m_effectData.aF.Length;
-        for (int i = 0; i < defFrameNum - 1; ++i)
-        {
-            EffectFrameData frame1 = m_effectData.aF[i];
-            EffectFrameData frame2 = m_effectData.aF[i + 1];
+    //private void SimulateFrameData()
+    //{
+    //    int defFrameNum = m_effectData.aF.Length;
+    //    for (int i = 0; i < defFrameNum - 1; ++i)
+    //    {
+    //        EffectFrameData frame1 = m_effectData.aF[i];
+    //        EffectFrameData frame2 = m_effectData.aF[i + 1];
 
-            m_listFrameData.Add(frame1);
+    //        m_listFrameData.Add(frame1);
 
-            for (int j = frame1.n + 1; j < frame2.n; ++j)
-            {
-                EffectFrameData nFrameData = new EffectFrameData();
-                nFrameData.n = j;
+    //        for (int j = frame1.n + 1; j < frame2.n; ++j)
+    //        {
+    //            EffectFrameData nFrameData = new EffectFrameData();
+    //            nFrameData.n = j;
 
-                m_listFrameData.Add(nFrameData);
+    //            m_listFrameData.Add(nFrameData);
 
-                List<EffectImageData> listImgData = new List<EffectImageData>();
+    //            List<EffectImageData> listImgData = new List<EffectImageData>();
 
-                for (int k = 0; k < frame1.aI.Length; ++k)
-                {
-                    EffectImageData imgData1 = frame1.aI[k];
-                    EffectImageData imgData2 = GetImgDataFromFrame(frame2, imgData1.i);
+    //            for (int k = 0; k < frame1.aI.Length; ++k)
+    //            {
+    //                EffectImageData imgData1 = frame1.aI[k];
+    //                EffectImageData imgData2 = GetImgDataFromFrame(frame2, imgData1.i);
 
-                    if(imgData2 != null)
-                    {
-                        EffectImageData nImgData = new EffectImageData();
-                        nImgData.i = imgData1.i;
-                        nImgData.sX = EffectEditorUtil.EvaluteInperpolation(imgData1.sX, imgData2.sX, frame1.n, frame2.n, j);
-                        nImgData.sY = EffectEditorUtil.EvaluteInperpolation(imgData1.sY, imgData2.sY, frame1.n, frame2.n, j);
-                        nImgData.pX = EffectEditorUtil.EvaluteInperpolation(imgData1.pX, imgData2.pX, frame1.n, frame2.n, j);
-                        nImgData.pY = EffectEditorUtil.EvaluteInperpolation(imgData1.pY, imgData2.pY, frame1.n, frame2.n, j);
-                        nImgData.r = EffectEditorUtil.EvaluteInperpolation(imgData1.r, imgData2.r, frame1.n, frame2.n, j);
-                        nImgData.c[0] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[0], imgData2.c[0], frame1.n, frame2.n, j);
-                        nImgData.c[1] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[1], imgData2.c[1], frame1.n, frame2.n, j);
-                        nImgData.c[2] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[2], imgData2.c[2], frame1.n, frame2.n, j);
-                        nImgData.c[3] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[3], imgData2.c[3], frame1.n, frame2.n, j);
+    //                if(imgData2 != null)
+    //                {
+    //                    EffectImageData nImgData = new EffectImageData();
+    //                    nImgData.i = imgData1.i;
+    //                    nImgData.sX = EffectEditorUtil.EvaluteInperpolation(imgData1.sX, imgData2.sX, frame1.n, frame2.n, j);
+    //                    nImgData.sY = EffectEditorUtil.EvaluteInperpolation(imgData1.sY, imgData2.sY, frame1.n, frame2.n, j);
+    //                    nImgData.pX = EffectEditorUtil.EvaluteInperpolation(imgData1.pX, imgData2.pX, frame1.n, frame2.n, j);
+    //                    nImgData.pY = EffectEditorUtil.EvaluteInperpolation(imgData1.pY, imgData2.pY, frame1.n, frame2.n, j);
+    //                    nImgData.r = EffectEditorUtil.EvaluteInperpolation(imgData1.r, imgData2.r, frame1.n, frame2.n, j);
+    //                    nImgData.c[0] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[0], imgData2.c[0], frame1.n, frame2.n, j);
+    //                    nImgData.c[1] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[1], imgData2.c[1], frame1.n, frame2.n, j);
+    //                    nImgData.c[2] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[2], imgData2.c[2], frame1.n, frame2.n, j);
+    //                    nImgData.c[3] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[3], imgData2.c[3], frame1.n, frame2.n, j);
 
-                        listImgData.Add(nImgData);
-                    }
-                    else
-                    {
-                        listImgData.Add(imgData1);
-                    }
+    //                    listImgData.Add(nImgData);
+    //                }
+    //                else
+    //                {
+    //                    listImgData.Add(imgData1);
+    //                }
 
-                    nFrameData.aI = listImgData.ToArray();
-                }
-            }
-        }
+    //                nFrameData.aI = listImgData.ToArray();
+    //            }
+    //        }
+    //    }
 
-        m_listFrameData.Add(m_effectData.aF[defFrameNum - 1]);
-    }
+    //    m_listFrameData.Add(m_effectData.aF[defFrameNum - 1]);
+    //}
 
-    // 从帧数据里面获取指定id的图片数据
-    private EffectImageData GetImgDataFromFrame(EffectFrameData frameData, int imgId)
-    {
-        for(int i =0; i < frameData.aI.Length; ++i)
-        {
-            EffectImageData imgData = frameData.aI[i];
-            if (imgData.i == imgId)
-                return imgData;
-        }
+    //// 从帧数据里面获取指定id的图片数据
+    //private EffectImageData GetImgDataFromFrame(EffectFrameData frameData, int imgId)
+    //{
+    //    for(int i =0; i < frameData.aI.Length; ++i)
+    //    {
+    //        EffectImageData imgData = frameData.aI[i];
+    //        if (imgData.i == imgId)
+    //            return imgData;
+    //    }
 
-        return null;
-    }
+    //    return null;
+    //}
 
     // 根据指定的帧更新显示
     // @effData:特效数据
@@ -185,6 +183,16 @@ public class EffectEditorUI : MonoBehaviour
         }
 
         for(int i = frameData.aI.Length; i < m_listImg.Count; ++i)
+        {
+            Image img = m_listImg[i];
+            img.gameObject.SetActive(false);
+        }
+    }
+
+    // 隐藏所有的图片
+    private void HideAllImg()
+    {
+        for (int i = 0; i < m_listImg.Count; ++i)
         {
             Image img = m_listImg[i];
             img.gameObject.SetActive(false);

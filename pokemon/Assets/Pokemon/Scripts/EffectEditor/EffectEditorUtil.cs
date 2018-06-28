@@ -38,6 +38,86 @@ public class EffectEditorUtil
         return leftVal + (rightVal - leftVal) * pct;
     }
 
+    // 模拟特效指定帧的帧数据
+    // @effectData:特效数据
+    // @frameNo:帧的编号
+    // return:有效的帧序号，返回对应的帧数据；否则null
+    public static EffectFrameData SimulateFrameData(EffectData effectData, int frameNo)
+    {
+        int defFrameNum = effectData.aF.Length;
+        if (effectData.aF.Length < 2 || frameNo < 0)
+            return null;
+
+        EffectFrameData lastFrameData = effectData.aF[defFrameNum - 1];
+        if (frameNo > lastFrameData.n)
+            return null;
+
+        // 找出最近的帧数据索引
+        int targetLeftFrameIdx = 0;
+        for (int i = 0; i < defFrameNum - 1; ++i)
+        {
+            EffectFrameData tmpFrame = effectData.aF[i];
+            if (frameNo >= tmpFrame.n)
+            {
+                targetLeftFrameIdx = i;
+            }
+        }
+
+        EffectFrameData frame1 = effectData.aF[targetLeftFrameIdx];
+        EffectFrameData frame2 = effectData.aF[targetLeftFrameIdx + 1];
+
+        EffectFrameData nFrameData = new EffectFrameData();
+        nFrameData.n = frameNo;
+
+        List<EffectImageData> listImgData = new List<EffectImageData>();
+
+        for (int k = 0; k < frame1.aI.Length; ++k)
+        {
+            EffectImageData imgData1 = frame1.aI[k];
+            EffectImageData imgData2 = GetImgDataFromFrame(frame2, imgData1.i);
+
+            if (imgData2 != null)
+            {
+                EffectImageData nImgData = new EffectImageData();
+                nImgData.i = imgData1.i;
+                nImgData.sX = EffectEditorUtil.EvaluteInperpolation(imgData1.sX, imgData2.sX, frame1.n, frame2.n, frameNo);
+                nImgData.sY = EffectEditorUtil.EvaluteInperpolation(imgData1.sY, imgData2.sY, frame1.n, frame2.n, frameNo);
+                nImgData.pX = EffectEditorUtil.EvaluteInperpolation(imgData1.pX, imgData2.pX, frame1.n, frame2.n, frameNo);
+                nImgData.pY = EffectEditorUtil.EvaluteInperpolation(imgData1.pY, imgData2.pY, frame1.n, frame2.n, frameNo);
+                nImgData.r = EffectEditorUtil.EvaluteInperpolation(imgData1.r, imgData2.r, frame1.n, frame2.n, frameNo);
+                nImgData.c[0] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[0], imgData2.c[0], frame1.n, frame2.n, frameNo);
+                nImgData.c[1] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[1], imgData2.c[1], frame1.n, frame2.n, frameNo);
+                nImgData.c[2] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[2], imgData2.c[2], frame1.n, frame2.n, frameNo);
+                nImgData.c[3] = (int)EffectEditorUtil.EvaluteInperpolation(imgData1.c[3], imgData2.c[3], frame1.n, frame2.n, frameNo);
+
+                listImgData.Add(nImgData);
+            }
+            else
+            {
+                listImgData.Add(imgData1);
+            }
+
+            nFrameData.aI = listImgData.ToArray();
+        }
+
+        return nFrameData;
+    }
+
+    // 从帧数据里面获取指定id的图片数据
+    // @frameData:帧数据
+    // @imgId:要获取的图片id
+    public static EffectImageData GetImgDataFromFrame(EffectFrameData frameData, int imgId)
+    {
+        for (int i = 0; i < frameData.aI.Length; ++i)
+        {
+            EffectImageData imgData = frameData.aI[i];
+            if (imgData.i == imgId)
+                return imgData;
+        }
+
+        return null;
+    }
+
 
     // 计算插值
     //public static float EvaluteInperpolation(float time, Keyframe lKf, Keyframe rKf)
