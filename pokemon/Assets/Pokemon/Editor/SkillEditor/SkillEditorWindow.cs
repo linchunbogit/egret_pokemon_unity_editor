@@ -46,7 +46,7 @@ public class SkillEditorWindow : EditorWindow
 
     private static readonly string[] ARR_ACTION_TYPE_NAME = new string[]
     {
-        "播放特效", "冲向目标", "发射子弹", "冲向坐标"
+        "场景播放特效", "冲向目标", "发射子弹", "自身特效",
     }; // 技能行为类型的中文名称
 
     private static readonly string[] ARR_DISPLAY_TYPE_NAME = new string[]
@@ -336,7 +336,7 @@ public class SkillEditorWindow : EditorWindow
         GUI.backgroundColor = m_defaultBgClr;
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("行为类型:", GUILayout.Width(55));
+        GUILayout.Label("行为类型:", GUILayout.Width(75));
         actionData.a = (int)EditorGUILayout.Popup(actionData.a, ARR_ACTION_TYPE_NAME, GUILayout.Width(100));
         //GUILayout.FlexibleSpace();
 
@@ -350,53 +350,111 @@ public class SkillEditorWindow : EditorWindow
 
         GUILayout.EndHorizontal();
 
-        if (actionData.a == (int)SkillActionType.PLAY_EFFECT) // 播放特效
+        if (actionData.a == (int)SkillActionType.PLAY_EFFECT || actionData.a == (int)SkillActionType.PLAY_EFFECT_SELF) // 播放特效
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("特效ID:", GUILayout.Width(55));
-            actionData.e = EditorGUILayout.IntField(actionData.e, GUILayout.Width(100));
-            GUILayout.Label("播放时间:", GUILayout.Width(55));
+            GUILayout.Label("行为播放时间:", GUILayout.Width(75));
             actionData.t = EditorGUILayout.FloatField(actionData.t, GUILayout.Width(100));
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("特效ID:", GUILayout.Width(75));
+            actionData.e1 = EditorGUILayout.IntField(actionData.e1, GUILayout.Width(100));
 
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("坐标X:", GUILayout.Width(55));
+            GUILayout.Label("坐标X:", GUILayout.Width(75));
             actionData.x = EditorGUILayout.IntField(actionData.x, GUILayout.Width(100));
-            GUILayout.Label("坐标Y:", GUILayout.Width(55));
+            GUILayout.Label("坐标Y:", GUILayout.Width(75));
             actionData.y = EditorGUILayout.IntField(actionData.y, GUILayout.Width(100));
             GUILayout.EndHorizontal();
         }
         else if (actionData.a == (int)SkillActionType.CRASH_TARGET) // 冲向目标
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("移动速度:", GUILayout.Width(55));
-            actionData.s = EditorGUILayout.IntField(actionData.s, GUILayout.Width(100));
-            GUILayout.EndHorizontal();
-        }
-        else if (actionData.a == (int)SkillActionType.CRASH_POS) // 冲向位置
-        {
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("坐标X:", GUILayout.Width(55));
-            actionData.x = EditorGUILayout.IntField(actionData.x, GUILayout.Width(100));
-            GUILayout.Label("坐标Y:", GUILayout.Width(55));
-            actionData.y = EditorGUILayout.IntField(actionData.y, GUILayout.Width(100));
-            GUILayout.EndHorizontal();
-        }
-        else if (actionData.a == (int)SkillActionType.SHOOT_BULLET) // 发射子弹
-        {
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("特效ID:", GUILayout.Width(55));
-            actionData.e = EditorGUILayout.IntField(actionData.e, GUILayout.Width(100));
-            GUILayout.Label("子弹速度:", GUILayout.Width(55));
-            actionData.s = EditorGUILayout.IntField(actionData.s, GUILayout.Width(100));
+            GUILayout.Label("行为播放时间:", GUILayout.Width(75));
+            actionData.t = EditorGUILayout.FloatField(actionData.t, GUILayout.Width(100));
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("同时受击:", GUILayout.Width(55));
-            bool sameTimeHit = actionData.sH == 1;
-            sameTimeHit = EditorGUILayout.Toggle(sameTimeHit, GUILayout.Width(100));
-            actionData.sH = sameTimeHit ? 1 : 0;
+            GUILayout.Label("移动速度:", GUILayout.Width(75));
+            actionData.s = EditorGUILayout.IntField(actionData.s, GUILayout.Width(100));
+            GUILayout.Label("限制移动时间:", GUILayout.Width(75));
+            bool limitMove = actionData.l2 == 1;
+            limitMove = EditorGUILayout.Toggle(limitMove, GUILayout.Width(40));
+            actionData.l2 = limitMove ? 1 : 0;
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("前排特效ID:", GUILayout.Width(75));
+            actionData.e1 = EditorGUILayout.IntField(actionData.e1, GUILayout.Width(100));
+            GUILayout.Label("后排特效ID:", GUILayout.Width(75));
+            actionData.e2 = EditorGUILayout.IntField(actionData.e2, GUILayout.Width(100));
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("特效锁目标:", GUILayout.Width(75));
+            bool lookTarget = actionData.l == 1;
+            lookTarget = EditorGUILayout.Toggle(lookTarget, GUILayout.Width(40));
+            actionData.l = lookTarget ? 1 : 0;
+            GUILayout.EndHorizontal();
+        }
+        //else if (actionData.a == (int)SkillActionType.CRASH_POS) // 冲向位置
+        //{
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("坐标X:", GUILayout.Width(55));
+        //    actionData.x = EditorGUILayout.IntField(actionData.x, GUILayout.Width(100));
+        //    GUILayout.Label("坐标Y:", GUILayout.Width(55));
+        //    actionData.y = EditorGUILayout.IntField(actionData.y, GUILayout.Width(100));
+        //    GUILayout.EndHorizontal();
+        //}
+        else if (actionData.a == (int)SkillActionType.SHOOT_BULLET) // 发射子弹
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("行为播放时间:", GUILayout.Width(75));
+            actionData.t = EditorGUILayout.FloatField(actionData.t, GUILayout.Width(100));
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("子弹速度:", GUILayout.Width(75));
+            actionData.s = EditorGUILayout.IntField(actionData.s, GUILayout.Width(100));
+            GUILayout.Label("限制移动时间:", GUILayout.Width(75));
+            bool limitMove = actionData.l2 == 1;
+            limitMove = EditorGUILayout.Toggle(limitMove, GUILayout.Width(40));
+            actionData.l2 = limitMove ? 1 : 0;
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("前排特效ID:", GUILayout.Width(75));
+            actionData.e1 = EditorGUILayout.IntField(actionData.e1, GUILayout.Width(100));
+            GUILayout.Label("后排特效ID:", GUILayout.Width(75));
+            actionData.e2 = EditorGUILayout.IntField(actionData.e2, GUILayout.Width(100));
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("特效锁目标:", GUILayout.Width(75));
+            bool lookTarget = actionData.l == 1;
+            lookTarget = EditorGUILayout.Toggle(lookTarget, GUILayout.Width(40));
+            actionData.l = lookTarget ? 1 : 0;
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("子弹时间1-3:", GUILayout.Width(75));
+            for(int i = 0; i < 3; ++i)
+            {
+                actionData.aB[i] = EditorGUILayout.FloatField(actionData.aB[i], GUILayout.Width(60));
+            }
+
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("子弹时间4-6:", GUILayout.Width(75));
+            for (int i = 3; i < 6; ++i)
+            {
+                actionData.aB[i] = EditorGUILayout.FloatField(actionData.aB[i], GUILayout.Width(60));
+            }
+
             GUILayout.EndHorizontal();
         }
 
@@ -405,7 +463,7 @@ public class SkillEditorWindow : EditorWindow
         for(int i = 0; i < actionData.aH.Length; ++i)
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("伤害id:", GUILayout.Width(55));
+            GUILayout.Label("伤害id:", GUILayout.Width(75));
             actionData.aH[i] = EditorGUILayout.IntField(actionData.aH[i], GUILayout.Width(100));
 
             if (GUILayout.Button("-", GUILayout.Width(20)))
@@ -585,7 +643,7 @@ public class SkillEditorWindow : EditorWindow
 
             for(int j = 0; j < hurmData.aD.Length; ++j)
             {
-                int dispId = hurmData.aD[i];
+                int dispId = hurmData.aD[j];
                 if(!CheckDispIsValid(dispId))
                 {
                     return false;
