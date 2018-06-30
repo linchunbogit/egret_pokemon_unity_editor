@@ -433,6 +433,13 @@ public class SkillEditorWindow : EditorWindow
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
+            GUILayout.Label("发射点偏移X:", GUILayout.Width(75));
+            actionData.x = EditorGUILayout.IntField(actionData.x, GUILayout.Width(100));
+            GUILayout.Label("发射点偏移Y:", GUILayout.Width(75));
+            actionData.y = EditorGUILayout.IntField(actionData.y, GUILayout.Width(100));
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
             GUILayout.Label("特效锁目标:", GUILayout.Width(75));
             bool lookTarget = actionData.l == 1;
             lookTarget = EditorGUILayout.Toggle(lookTarget, GUILayout.Width(40));

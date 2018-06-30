@@ -27,6 +27,8 @@ public enum SkillActionType
     CRASH_TARGET,           // 冲向目标
     SHOOT_BULLET,           // 发射子弹
     PLAY_EFFECT_SELF,       // 相对自己播放特效
+    PLAY_EFFECT_ENEMY,      // 相对敌人的位置播放特效
+    PLAY_EFFECT_ENEMY_LINK, // 相对敌人的位置，链特效
     //CRASH_POS,              // 冲向坐标
 }
 
@@ -59,6 +61,7 @@ public class SkillActionData
     public int x;       // 目的坐标x
     public int y;       // 目的坐标y
     public float t;     // 播放行为
+    public int n;       // 执行顺序
     //public int sH;      // 同时受击
     public int[] aH;    // 伤害id集合
     public float[] aB;  // 子弹受击时间
