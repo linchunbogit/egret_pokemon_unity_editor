@@ -42,11 +42,16 @@ public class SkillEditorWindow : EditorWindow
     // val => 存在次数
     private Dictionary<int, int> m_dicDispNum = new Dictionary<int, int>();
 
+    // 触发数据id数量映射
+    // key => 行为id
+    // val => 存在次数
+    private Dictionary<int, int> m_dicActNum = new Dictionary<int, int>();
+
     private const int MENU_WIDTH = 350; // 菜单宽度
 
     private static readonly string[] ARR_ACTION_TYPE_NAME = new string[]
     {
-        "场景播放特效", "冲向目标", "发射子弹", "自身特效",
+        "场景播放特效", "冲向目标", "发射子弹", "自身特效", "敌人特效", "链特效"
     }; // 技能行为类型的中文名称
 
     private static readonly string[] ARR_DISPLAY_TYPE_NAME = new string[]
@@ -67,6 +72,16 @@ public class SkillEditorWindow : EditorWindow
             return;
 
         GUILayout.BeginHorizontal();
+
+        m_dicActNum.Clear();
+        for(int i = 0; i < m_skillData.aA.Length; ++i)
+        {
+            int id = m_skillData.aA[i].i;
+            if (m_dicActNum.ContainsKey(id))
+                m_dicActNum[id]++;
+            else
+                m_dicActNum.Add(id, 1);
+        }
 
         m_dicHurmNum.Clear();
         for (int i = 0; i < m_skillData.aH.Length; ++i)
@@ -230,6 +245,7 @@ public class SkillEditorWindow : EditorWindow
             List<SkillActionData> listAction = new List<SkillActionData>(m_skillData.aA);
             SkillActionData actData = new SkillActionData();
             actData.aH = new int[0];
+            actData.i = GetMaxActionDataId() + 1;
             listAction.Add(actData);
 
             m_skillData.aA = listAction.ToArray();
@@ -270,13 +286,13 @@ public class SkillEditorWindow : EditorWindow
         // +按钮
         if (GUILayout.Button("+", GUILayout.Width(MENU_WIDTH), GUILayout.Height(40)))
         {
-            List<SkillHurmData> listHurm = new List<SkillHurmData>(m_skillData.aH);
-            SkillHurmData hurmData = new SkillHurmData();
-            hurmData.aD = new int[0];
+            List<SkillHurmData> listHarm = new List<SkillHurmData>(m_skillData.aH);
+            SkillHurmData harmData = new SkillHurmData();
+            harmData.aD = new int[0];
+            harmData.i = GetMaxHarmDataId() + 1;
+            listHarm.Add(harmData);
 
-            listHurm.Add(hurmData);
-
-            m_skillData.aH = listHurm.ToArray();
+            m_skillData.aH = listHarm.ToArray();
         }
 
         GUILayout.EndVertical(); // 绘制行为
@@ -315,7 +331,9 @@ public class SkillEditorWindow : EditorWindow
         if (GUILayout.Button("+", GUILayout.Width(MENU_WIDTH), GUILayout.Height(40)))
         {
             List<SkillDisplayData> listDisp = new List<SkillDisplayData>(m_skillData.aD);
-            listDisp.Add(new SkillDisplayData());
+            SkillDisplayData dData = new SkillDisplayData();
+            dData.i = GetMaxDisplayDataId() + 1;
+            listDisp.Add(dData);
 
             m_skillData.aD = listDisp.ToArray();
         }
@@ -327,8 +345,11 @@ public class SkillEditorWindow : EditorWindow
     // @actionData:行为数据
     private void DrawActionItem(SkillActionData actionData)
     {
-        if(CheckActionIsValid(actionData))
-            GUI.backgroundColor = Color.green;
+        if (CheckActionIsValid(actionData))
+            if (actionData.tA == 1)
+                GUI.backgroundColor = new Color32(255, 175, 0, 255);
+            else
+                GUI.backgroundColor = Color.green;
         else
             GUI.backgroundColor = Color.red;
 
@@ -336,8 +357,8 @@ public class SkillEditorWindow : EditorWindow
         GUI.backgroundColor = m_defaultBgClr;
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("行为类型:", GUILayout.Width(75));
-        actionData.a = (int)EditorGUILayout.Popup(actionData.a, ARR_ACTION_TYPE_NAME, GUILayout.Width(100));
+        GUILayout.Label("行为id:", GUILayout.Width(75));
+        actionData.i = (int)EditorGUILayout.IntField(actionData.i, GUILayout.Width(100));
         //GUILayout.FlexibleSpace();
 
         if (GUILayout.Button("-", GUILayout.Width(20)))
@@ -350,13 +371,28 @@ public class SkillEditorWindow : EditorWindow
 
         GUILayout.EndHorizontal();
 
-        if (actionData.a == (int)SkillActionType.PLAY_EFFECT || actionData.a == (int)SkillActionType.PLAY_EFFECT_SELF) // 播放特效
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("行为类型:", GUILayout.Width(75));
+        actionData.a = (int)EditorGUILayout.Popup(actionData.a, ARR_ACTION_TYPE_NAME, GUILayout.Width(100));
+        //GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        bool isTrigger = actionData.tA == 1;
+
+        if (!isTrigger)
         {
-            GUILayout.BeginHorizontal();
             GUILayout.Label("行为播放时间:", GUILayout.Width(75));
             actionData.t = EditorGUILayout.FloatField(actionData.t, GUILayout.Width(100));
-            GUILayout.EndHorizontal();
+        }
+        GUILayout.Label("触发行为:", GUILayout.Width(75));
+        isTrigger = EditorGUILayout.Toggle(isTrigger, GUILayout.Width(40));
+        actionData.tA = isTrigger ? 1 : 0;
+        GUILayout.EndHorizontal();
 
+        if (actionData.a == (int)SkillActionType.PLAY_EFFECT || actionData.a == (int)SkillActionType.PLAY_EFFECT_SELF) // 播放特效
+        {
             GUILayout.BeginHorizontal();
             GUILayout.Label("特效ID:", GUILayout.Width(75));
             actionData.e1 = EditorGUILayout.IntField(actionData.e1, GUILayout.Width(100));
@@ -372,11 +408,6 @@ public class SkillEditorWindow : EditorWindow
         }
         else if (actionData.a == (int)SkillActionType.CRASH_TARGET) // 冲向目标
         {
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("行为播放时间:", GUILayout.Width(75));
-            actionData.t = EditorGUILayout.FloatField(actionData.t, GUILayout.Width(100));
-            GUILayout.EndHorizontal();
-
             GUILayout.BeginHorizontal();
             GUILayout.Label("移动速度:", GUILayout.Width(75));
             actionData.s = EditorGUILayout.IntField(actionData.s, GUILayout.Width(100));
@@ -411,11 +442,6 @@ public class SkillEditorWindow : EditorWindow
         //}
         else if (actionData.a == (int)SkillActionType.SHOOT_BULLET) // 发射子弹
         {
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("行为播放时间:", GUILayout.Width(75));
-            actionData.t = EditorGUILayout.FloatField(actionData.t, GUILayout.Width(100));
-            GUILayout.EndHorizontal();
-
             GUILayout.BeginHorizontal();
             GUILayout.Label("子弹速度:", GUILayout.Width(75));
             actionData.s = EditorGUILayout.IntField(actionData.s, GUILayout.Width(100));
@@ -464,8 +490,19 @@ public class SkillEditorWindow : EditorWindow
 
             GUILayout.EndHorizontal();
         }
+        else if (actionData.a == (int)SkillActionType.SHOOT_BULLET) // 敌人特效
+        {
 
+        }
+        else if (actionData.a == (int)SkillActionType.PLAY_EFFECT_LINK) // 链特效
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("链特效ID:", GUILayout.Width(75));
+            actionData.e1 = EditorGUILayout.IntField(actionData.e1, GUILayout.Width(100));
+            GUILayout.EndHorizontal();
+        }
 
+        // 伤害集合
         GUILayout.BeginVertical();
         for(int i = 0; i < actionData.aH.Length; ++i)
         {
@@ -487,14 +524,52 @@ public class SkillEditorWindow : EditorWindow
        
         GUILayout.EndVertical();
 
+        // 触发集合
+        GUILayout.BeginVertical();
+        for (int i = 0; i < actionData.aT.Length; ++i)
+        {
+            SkillTriggerData triData = actionData.aT[i];
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("触发id:", GUILayout.Width(75));
+            triData.i = EditorGUILayout.IntField(triData.i, GUILayout.Width(60));
+            GUILayout.Label("触发时间:", GUILayout.Width(50));
+            triData.t = EditorGUILayout.FloatField(triData.t, GUILayout.Width(60));
+
+            if (GUILayout.Button("-", GUILayout.Width(20)))
+            {
+                List<SkillTriggerData> listData = new List<SkillTriggerData>(actionData.aT);
+                listData.RemoveAt(i);
+                actionData.aT = listData.ToArray();
+                break;
+            }
+
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+        }
+
+        GUILayout.EndVertical();
+
+        GUILayout.BeginHorizontal();
+
         // +按钮
-        if (GUILayout.Button("+", GUILayout.Width(MENU_WIDTH), GUILayout.Height(20), GUILayout.Width(345)))
+        if (GUILayout.Button("绑定伤害", GUILayout.Height(20), GUILayout.Width(150)))
         {
             List<int> listId = new List<int>(actionData.aH);
             listId.Add(0);
 
             actionData.aH = listId.ToArray();
         }
+
+        if (GUILayout.Button("绑定触发", GUILayout.Height(20), GUILayout.Width(150)))
+        {
+            List<SkillTriggerData> listData = new List<SkillTriggerData>(actionData.aT);
+            listData.Add(new SkillTriggerData());
+
+            actionData.aT = listData.ToArray();
+        }
+
+        GUILayout.EndHorizontal();
 
         GUILayout.EndVertical();
 
@@ -558,15 +633,13 @@ public class SkillEditorWindow : EditorWindow
         GUILayout.EndVertical();
 
         // +按钮
-        if (GUILayout.Button("+", GUILayout.Width(MENU_WIDTH), GUILayout.Height(20), GUILayout.Width(345)))
+        if (GUILayout.Button("绑定表现", GUILayout.Width(MENU_WIDTH), GUILayout.Height(20), GUILayout.Width(345)))
         {
             List<int> listId = new List<int>(hurmData.aD);
             listId.Add(0);
 
             hurmData.aD = listId.ToArray();
         }
-
-
 
 
         GUILayout.EndVertical();
@@ -621,11 +694,39 @@ public class SkillEditorWindow : EditorWindow
     // return:有效返回true；否则false
     private bool CheckActionIsValid(SkillActionData actionData)
     {
+        if (!m_dicActNum.ContainsKey(actionData.i) || m_dicActNum[actionData.i] != 1)
+            return false;
+
         for(int i = 0; i < actionData.aH.Length; ++i)
         {
             int harmId = actionData.aH[i];
             if (!CheckHurmIsValid(harmId))
                 return false;
+        }
+
+        // 触发行为判断
+        if(actionData.tA == 0)
+        {
+            // 自己触发自己
+            for(int i = 0; i < actionData.aT.Length; ++i)
+            {
+                // 先判断触发id是否正确
+                SkillTriggerData tData = actionData.aT[i];
+                if (!m_dicActNum.ContainsKey(tData.i) || m_dicActNum[tData.i] != 1 || tData.i == actionData.i)
+                {
+                    return false;
+                }
+
+                for(int j  = 0; j < m_skillData.aA.Length; ++j)
+                {
+                    // 触发的行为不是触发行为
+                    SkillActionData aData = m_skillData.aA[j];
+                    if(aData.i == tData.i && aData.tA != 1)
+                    {
+                        return false;
+                    }
+                }
+            }
         }
 
         return true;
@@ -672,7 +773,44 @@ public class SkillEditorWindow : EditorWindow
         return false;
     }
 
+    // 获取最大的行为id
+    private int GetMaxActionDataId()
+    {
+        int id = 0;
+        for(int i = 0; i < m_skillData.aA.Length; ++i)
+        {
+            if (m_skillData.aA[i].i > id)
+                id = m_skillData.aA[i].i;
+        }
 
+        return id;
+    }
+
+    // 获取最大的伤害id
+    private int GetMaxHarmDataId()
+    {
+        int id = 0;
+        for (int i = 0; i < m_skillData.aH.Length; ++i)
+        {
+            if (m_skillData.aH[i].i > id)
+                id = m_skillData.aH[i].i;
+        }
+
+        return id;
+    }
+
+    // 获取最大的表现id
+    private int GetMaxDisplayDataId()
+    {
+        int id = 0;
+        for (int i = 0; i < m_skillData.aD.Length; ++i)
+        {
+            if (m_skillData.aD[i].i > id)
+                id = m_skillData.aD[i].i;
+        }
+
+        return id;
+    }
 
     // 创建新的技能数据
     // return:技能数据

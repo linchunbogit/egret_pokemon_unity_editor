@@ -28,7 +28,7 @@ public enum SkillActionType
     SHOOT_BULLET,           // 发射子弹
     PLAY_EFFECT_SELF,       // 相对自己播放特效
     PLAY_EFFECT_ENEMY,      // 相对敌人的位置播放特效
-    PLAY_EFFECT_ENEMY_LINK, // 相对敌人的位置，链特效
+    PLAY_EFFECT_LINK,       // 相对敌人的位置，链特效
     //CRASH_POS,              // 冲向坐标
 }
 
@@ -49,9 +49,17 @@ public class SkillDisplayData
     public int e;       // 特效id
 }
 
+// 技能触发数据
+public class SkillTriggerData
+{
+    public int i;       // 触发的id
+    public float t;       // 触发的时间
+}
+
 // 技能行为数据
 public class SkillActionData
 {
+    public int i;       // 行为id
     public int a;       // 技能行为类型
     public int s;       // 速度，子弹和冲
     public int e1;      // 前排特效id
@@ -62,13 +70,16 @@ public class SkillActionData
     public int y;       // 目的坐标y
     public float t;     // 播放行为
     public int n;       // 执行顺序
+    public int tA;      // triggerAction:是否是触发行为的标识
     //public int sH;      // 同时受击
     public int[] aH;    // 伤害id集合
     public float[] aB;  // 子弹受击时间
+    public SkillTriggerData[] aT;   // 触发数据集合
 
     public SkillActionData()
     {
         aH = new int[0];
+        aT = new SkillTriggerData[0];
         aB = new float[] { 0, 0, 0, 0, 0, 0};
     }
 }
